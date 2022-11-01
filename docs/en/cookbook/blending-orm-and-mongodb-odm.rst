@@ -16,13 +16,13 @@ First lets define our ``Product`` document:
 
     namespace Documents;
 
-    /** @Document */
+    #[Document]
     class Product
     {
-        /** @Id */
+        #[Id]
         private $id;
 
-        /** @Field(type="string") */
+        #[Field(type: 'string')]
         private $title;
 
         public function getId(): ?string
@@ -54,21 +54,16 @@ Next create the ``Order`` entity that has a ``$product`` and ``$productId`` prop
 
     use Documents\Product;
 
-    /**
-     * @Entity
-     * @Table(name="orders")
-     */
+    #[Entity]
+    #[Table(name: 'orders')]
     class Order
     {
-        /**
-         * @Id @Column(type="int")
-         * @GeneratedValue(strategy="AUTO")
-         */
+        #[Id]
+        #[Column(type: 'int')]
+        #[GeneratedValue(strategy: 'AUTO')]
         private $id;
 
-        /**
-         * @Column(type="string")
-         */
+        #[Column(type: 'string')]
         private $productId;
 
         /**
@@ -114,8 +109,8 @@ Now we need to setup an event subscriber that will set the ``$product`` property
 
 or in .yaml
 
-.. code-block:: yaml    
-    
+.. code-block:: yaml
+
     App\Listeners\MyEventSubscriber:
         tags:
             - { name: doctrine.event_listener, connection: default, event: postLoad}
@@ -154,11 +149,11 @@ So now we need to define a class named ``MyEventSubscriber`` and pass ``Document
         }
     }
 
-The ``postLoad`` method will be invoked after an ORM entity is loaded from the database. This allows us 
-to use the ``DocumentManager`` to set the ``$product`` property with a reference to the ``Product`` document 
-with the product id we previously stored. Please note, that the event subscriber will be called on 
-postLoad for all entities that are loaded by doctrine. Thus, it is recommended to check for the current 
-entity.  
+The ``postLoad`` method will be invoked after an ORM entity is loaded from the database. This allows us
+to use the ``DocumentManager`` to set the ``$product`` property with a reference to the ``Product`` document
+with the product id we previously stored. Please note, that the event subscriber will be called on
+postLoad for all entities that are loaded by doctrine. Thus, it is recommended to check for the current
+entity.
 
 Working with Products and Orders
 --------------------------------

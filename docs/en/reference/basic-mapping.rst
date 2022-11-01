@@ -63,7 +63,7 @@ Persistent classes
 
 In order to mark a class for object-relational persistence it needs
 to be designated as a document. This can be done through the
-``@Document`` marker annotation.
+``#[Document]`` marker attribute.
 
 .. configuration-block::
 
@@ -73,7 +73,7 @@ to be designated as a document. This can be done through the
 
         namespace Documents;
 
-        /** @Document */
+        #[Document]
         class User
         {
         }
@@ -102,7 +102,7 @@ option as follows:
 
         namespace Documents;
 
-        /** @Document(db="my_db", collection="users") */
+        #[Document(db: "my_db", collection: "users")]
         class User
         {
         }
@@ -244,7 +244,7 @@ Identifiers
 ~~~~~~~~~~~
 
 Every document class needs an identifier. You designate the field
-that serves as the identifier with the ``@Id`` marker annotation.
+that serves as the identifier with the ``#[Id]`` marker attribute.
 Here is an example:
 
 .. configuration-block::
@@ -255,10 +255,10 @@ Here is an example:
 
         namespace Documents;
 
-        /** @Document */
+        #[Document]
         class User
         {
-            /** @Id */
+            #[Id]
             private $id;
         }
 
@@ -292,10 +292,10 @@ Here is an example how to manually set a string identifier for your documents:
 
         <?php
 
-        /** Document */
+        #[Document]
         class MyPersistentClass
         {
-            /** @Id(strategy="NONE", type="string") */
+            #[Id(strategy: "NONE", type: "string")]
             private $id;
 
             public function setId(string $id): void
@@ -351,10 +351,10 @@ as an option for the ``CUSTOM`` strategy:
 
         <?php
 
-        /** Document */
+        #[Document]
         class MyPersistentClass
         {
-            /** @Id(strategy="CUSTOM", type="string", options={"class"="Vendor\Specific\Generator"}) */
+            #[Id(strategy: "CUSTOM", type: "string", options: ['class' => Vendor\Specific\Generator::class])]
             private $id;
 
             public function setId(string $id): void
@@ -382,9 +382,9 @@ as an option for the ``CUSTOM`` strategy:
 Fields
 ~~~~~~
 
-To mark a property for document persistence the ``@Field`` docblock
-annotation can be used. This annotation usually requires at least 1
-attribute to be set, the ``type``. The ``type`` attribute specifies
+To mark a property for document persistence the ``#[Field]``
+attribute can be used. This attribute usually requires at least 1
+option to be set, the ``type``. The ``type`` option specifies
 the Doctrine Mapping Type to use for the field. If the type is not
 specified, 'string' is used as the default mapping type since it is
 the most flexible.

@@ -64,10 +64,10 @@ First Annotations:
 
         <?php
 
-        /** @Document @HasLifecycleCallbacks */
+        #[Document, HasLifecycleCallbacks]
         class Order
         {
-            /** @PrePersist @PreUpdate */
+            #[PrePersist, PreUpdate]
             public function assertCustomerAllowedBuying(): void {}
         }
 
@@ -96,10 +96,10 @@ validation callbacks.
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document, HasLifecycleCallbacks]
     class Order
     {
-        /** @PrePersist @PreUpdate */
+        #[PrePersist, PreUpdate]
         public function validate(): void
         {
             if (!($this->plannedShipDate instanceof DateTime)) {
@@ -174,14 +174,12 @@ the ``odm:schema:create`` or ``odm:schema:update`` command.
         use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
         use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-        /**
-         * @ODM\Document
-         * @ODM\Validation(
-         *     validator=SchemaValidated::VALIDATOR,
-         *     action=ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
-         *     level=ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
-         * )
-         */
+        #[ODM\Document]
+        #[ODM\Validation(
+            validator: SchemaValidated::VALIDATOR,
+            action: ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
+            level: ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
+        )]
         class SchemaValidated
         {
             public const VALIDATOR = <<<'EOT'
@@ -203,19 +201,19 @@ the ``odm:schema:create`` or ``odm:schema:update`` command.
         }
         EOT;
 
-            /** @ODM\Id */
+            #[ODM\Id]
             private $id;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $name;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $phone;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $email;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $status;
         }
 
