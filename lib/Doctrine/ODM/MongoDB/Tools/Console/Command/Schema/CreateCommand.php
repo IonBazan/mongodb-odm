@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use BadMethodCallException;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use MongoDB\Driver\WriteConcern;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,7 +13,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
 use function array_filter;
-use function assert;
 use function is_string;
 use function sprintf;
 use function ucfirst;
@@ -22,11 +20,9 @@ use function ucfirst;
 class CreateCommand extends AbstractCommand
 {
     /** @var string[] */
-    private $createOrder = [self::COLLECTION, self::INDEX];
+    private array $createOrder = [self::COLLECTION, self::INDEX];
 
-    /**
-     * @return void
-     */
+    /** @return void */
     protected function configure()
     {
         parent::configure();
@@ -40,14 +36,10 @@ class CreateCommand extends AbstractCommand
             ->setDescription('Create databases, collections and indexes for your documents');
     }
 
-    /**
-     * @return int
-     */
+    /** @return int */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $create = array_filter($this->createOrder, static function (string $option) use ($input): bool {
-            return (bool) $input->getOption($option);
-        });
+        $create = array_filter($this->createOrder, static fn (string $option): bool => (bool) $input->getOption($option));
 
         // Default to the full creation order if no options were specified
         $create = empty($create) ? $this->createOrder : $create;
@@ -111,20 +103,15 @@ class CreateCommand extends AbstractCommand
         $sm->ensureIndexes($maxTimeMs, $writeConcern, $background);
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     protected function processDocumentProxy(SchemaManager $sm, string $document)
     {
         $classMetadata = $this->getMetadataFactory()->getMetadataFor($document);
-        assert($classMetadata instanceof ClassMetadata);
 
         $this->getDocumentManager()->getProxyFactory()->generateProxyClasses([$classMetadata]);
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     protected function processProxy(SchemaManager $sm)
     {
         $metadatas = $this->getMetadataFactory()->getAllMetadata();

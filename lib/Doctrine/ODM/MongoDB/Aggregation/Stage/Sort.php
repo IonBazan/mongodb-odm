@@ -15,13 +15,14 @@ use function strtolower;
 /**
  * Fluent interface for adding a $sort stage to an aggregation pipeline.
  *
- * @psalm-type SortMeta = array{"$meta": 'textScore'}
+ * @psalm-type SortMetaKeywords = 'textScore'|'indexKey'
+ * @psalm-type SortMeta = array{"$meta": SortMetaKeywords}
  * @psalm-type SortShape = array<string, int|SortMeta|string>
  */
 class Sort extends Stage
 {
     /** @var array<string, -1|1|SortMeta> */
-    private $sort = [];
+    private array $sort = [];
 
     /**
      * @param array<string, int|string|array<string, string>>|string $fieldName Field name or array of field/order pairs

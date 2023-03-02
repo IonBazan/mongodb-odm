@@ -23,9 +23,7 @@ use const PATHINFO_BASENAME;
  */
 class DefaultGridFSRepository extends DocumentRepository implements GridFSRepository
 {
-    /**
-     * @see Bucket::openDownloadStream()
-     */
+    /** @see Bucket::openDownloadStream() */
     public function openDownloadStream($id)
     {
         try {
@@ -35,9 +33,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
         }
     }
 
-    /**
-     * @see Bucket::downloadToStream
-     */
+    /** @see Bucket::downloadToStream */
     public function downloadToStream($id, $destination): void
     {
         try {
@@ -47,9 +43,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
         }
     }
 
-    /**
-     * @see Bucket::openUploadStream
-     */
+    /** @see Bucket::openUploadStream */
     public function openUploadStream(string $filename, ?UploadOptions $uploadOptions = null)
     {
         $options = $this->prepareOptions($uploadOptions);
@@ -57,9 +51,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
         return $this->getDocumentBucket()->openUploadStream($filename, $options);
     }
 
-    /**
-     * @see Bucket::uploadFromStream
-     */
+    /** @see Bucket::uploadFromStream */
     public function uploadFromStream(string $filename, $source, ?UploadOptions $uploadOptions = null)
     {
         $options = $this->prepareOptions($uploadOptions);
@@ -95,6 +87,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
 
     /**
      * @psalm-return array{
+     *     _id?: mixed,
      *     chunkSizeBytes?: int,
      *     metadata?: object
      * }
@@ -107,6 +100,10 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
 
         $chunkSizeBytes = $uploadOptions->chunkSizeBytes ?: $this->class->getChunkSizeBytes();
         $options        = [];
+
+        if ($uploadOptions->id !== null) {
+            $options['_id'] = $uploadOptions->id;
+        }
 
         if ($chunkSizeBytes !== null) {
             $options['chunkSizeBytes'] = $chunkSizeBytes;
