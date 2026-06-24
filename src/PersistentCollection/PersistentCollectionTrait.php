@@ -7,7 +7,6 @@ namespace Doctrine\ODM\MongoDB\PersistentCollection;
 use Closure;
 use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Selectable;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -175,6 +174,12 @@ trait PersistentCollectionTrait
         }
 
         $this->isDirty = true;
+
+        if (! $this->needsSchedulingForSynchronization() || $this->owner === null) {
+            return;
+        }
+
+        $this->uow->scheduleForSynchronization($this->owner);
     }
 
     public function isDirty(): bool
@@ -441,7 +446,7 @@ trait PersistentCollectionTrait
      * @param mixed $element The element to add.
      * @phpstan-param T $element
      */
-    public function add($element): void
+    public function add(mixed $element): void
     {
         $this->doAdd($element, false);
     }
@@ -770,14 +775,19 @@ trait PersistentCollectionTrait
         return $this->coll->reduce($func, $initial);
     }
 
+    /**
+     * Checks whether collection owner needs to be scheduled for dirty change in case the collection is modified.
+     */
+    private function needsSchedulingForSynchronization(): bool
+    {
+        return $this->owner && isset($this->dm) && ! empty($this->mapping['isOwningSide'])
+            && $this->dm->getClassMetadata($this->owner::class)->isChangeTrackingNotify();
+    }
+
     /** @return BaseCollection<TKey, T> */
     public function matching(Criteria $criteria): BaseCollection
     {
         $this->initialize();
-
-        if (! $this->coll instanceof Selectable) {
-            throw new LogicException('The backed collection must implement Selectable to use matching().');
-        }
 
         $coll = $this->coll->matching($criteria);
 
