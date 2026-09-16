@@ -2506,6 +2506,17 @@ use const PHP_VERSION_ID;
             throw MappingException::repositoryMethodCanNotBeCombinedWithSkipLimitAndSort($this->name, $mapping['fieldName']);
         }
 
+        // XML mappings provide sort orders as strings, which the persister and the query builder interpret differently
+        if (isset($mapping['sort'])) {
+            foreach ($mapping['sort'] as $field => $order) {
+                $mapping['sort'][$field] = match (is_string($order) ? strtolower($order) : $order) {
+                    'asc', '1', 1 => 1,
+                    'desc', '-1', -1 => -1,
+                    default => $order,
+                };
+            }
+        }
+
         if (isset($mapping['targetDocument']) && isset($mapping['discriminatorMap'])) {
             trigger_deprecation(
                 'doctrine/mongodb-odm',
